@@ -1,8 +1,8 @@
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,150 +14,102 @@ import org.junit.Test;
 
 public class TestCases
 {
-   private static final double DELTA = 0.00001;
+   public static final double DELTA = 0.00001;
 
+   /*
+    * This test is just to get you started.
+    */
    @Test
-   public void testSimpleIf1()
+   public void testGetX()
    {
-      assertEquals(1.7, SimpleIf.max(1.2, 1.7), DELTA);
+      assertEquals(1.0, new Point(1.0, 2.0).getX(), DELTA);
    }
 
-   @Test
-   public void testSimpleIf2()
-   {
-      assertEquals(9.0, SimpleIf.max(9.0, 3.2), DELTA);
-   }
+   /*
+    * The tests below here are to verify the basic requirements regarding
+    * the "design" of your class.  These are to remain unchanged.
+    */
 
    @Test
-   public void testSimpleIf3()
+   public void testImplSpecifics()
+      throws NoSuchMethodException
    {
-      fail("Missing SimpleIf3");
-      /* TO DO: Write one more valid test case. */
+      final List<String> expectedMethodNames = Arrays.asList(
+         "getX",
+         "getY",
+         "getRadius",
+         "getAngle",
+         "rotate90"
+         );
+
+      final List<Class> expectedMethodReturns = Arrays.asList(
+         double.class,
+         double.class,
+         double.class,
+         double.class,
+         Point.class
+         );
+
+      final List<Class[]> expectedMethodParameters = Arrays.asList(
+         new Class[0],
+         new Class[0],
+         new Class[0],
+         new Class[0],
+         new Class[0]
+         );
+
+      verifyImplSpecifics(Point.class, expectedMethodNames,
+         expectedMethodReturns, expectedMethodParameters);
    }
 
-   @Test
-   public void testSimpleLoop1()
+   private static void verifyImplSpecifics(
+      final Class<?> clazz,
+      final List<String> expectedMethodNames,
+      final List<Class> expectedMethodReturns,
+      final List<Class[]> expectedMethodParameters)
+      throws NoSuchMethodException
    {
-      assertEquals(7, SimpleLoop.sum(3, 4));
+      assertEquals("Unexpected number of public fields",
+         0, Point.class.getFields().length);
+
+      final List<Method> publicMethods = Arrays.stream(
+         clazz.getDeclaredMethods())
+            .filter(m -> Modifier.isPublic(m.getModifiers()))
+            .collect(Collectors.toList());
+
+      assertEquals("Unexpected number of public methods",
+         expectedMethodNames.size(), publicMethods.size());
+
+      assertTrue("Invalid test configuration",
+         expectedMethodNames.size() == expectedMethodReturns.size());
+      assertTrue("Invalid test configuration",
+         expectedMethodNames.size() == expectedMethodParameters.size());
+
+      for (int i = 0; i < expectedMethodNames.size(); i++)
+      {
+         Method method = clazz.getDeclaredMethod(expectedMethodNames.get(i),
+            expectedMethodParameters.get(i));
+         assertEquals(expectedMethodReturns.get(i), method.getReturnType());
+      }
+
+      // verify that fields are final
+      final List<Field> nonFinalFields = Arrays.stream(
+         clazz.getDeclaredFields())
+            .filter(f -> !Modifier.isFinal(f.getModifiers()))
+            .collect(Collectors.toList());
+
+      assertEquals("Unexpected non-final fields", 0, nonFinalFields.size());
    }
 
-   @Test
-   public void testSimpleLoop2()
-   {
-      assertEquals(7, SimpleLoop.sum(-2, 4));
-   }
-
-   @Test
-   public void testSimpleLoop3()
-   {
-      fail("Missing SimpleLoop3");
-      /* TO DO: Write one more valid test case to make sure that
-         this function is not just returning 7. */
-   }
-
-   @Test
-   public void testSimpleArray1()
-   {
-      /* What are those parameters?  They are newly allocated arrays
-         with initial values. */
-      assertArrayEquals(
-         new int[] {1, 4, 9},
-         SimpleArray.squareAll(new int[] {1, 2, 3}));
-   }
-
-   @Test
-   public void testSimpleArray2()
-   {
-      assertArrayEquals(
-         new int[] {49, 25},
-         SimpleArray.squareAll(new int[] {7, 5}));
-   }
-
-   @Test
-   public void testSimpleArray3()
-   {
-      fail("Missing SimpleArray3");
-      /* TO DO: Add a new test case. */
-   }
-
-   @Test
-   public void testSimpleList1()
-   {
-      List<Integer> input =
-         new LinkedList<Integer>(Arrays.asList(new Integer[] {1, 2, 3}));
-      List<Integer> expected =
-         new ArrayList<Integer>(Arrays.asList(new Integer[] {1, 4, 9}));
-
-      assertEquals(expected, SimpleList.squareAll(input));
-   }
-
-   @Test
-   public void testSimpleList2()
-   {
-      fail("Missing SimpleList2");
-      /* TO DO: Add a new test case. */
-   }
-
-   @Test
-   public void testBetterLoop1()
-   {
-      assertTrue(BetterLoop.contains(new int[] {7, 5}, 5));
-   }
-
-   @Test
-   public void testBetterLoop2()
-   {
-      assertTrue(BetterLoop.contains(new int[] {7, 5, 2, 4}, 4));
-   }
-
-   @Test
-   public void testBetterLoop3()
-   {
-      fail("Missing BetterLoop3");
-      /* TO DO: Write a valid test case where the expected result is false. */
-   }
-
-   @Test
-   public void testExampleMap1()
-   {
-      List<String> expected = Arrays.asList("Julie", "Zoe");
-      Map<String, List<Course>> courseListsByStudent = new HashMap<>();
-
-      courseListsByStudent.put("Julie",
-         Arrays.asList(
-            new Course("CPE 123", 4),
-            new Course("CPE 101", 4),
-            new Course("CPE 202", 4),
-            new Course("CPE 203", 4),
-            new Course("CPE 225", 4)));
-      courseListsByStudent.put("Paul",
-         Arrays.asList(
-            new Course("CPE 101", 4),
-            new Course("CPE 202", 4),
-            new Course("CPE 203", 4),
-            new Course("CPE 225", 4)));
-      courseListsByStudent.put("Zoe",
-         Arrays.asList(
-            new Course("CPE 123", 4),
-            new Course("CPE 203", 4),
-            new Course("CPE 471", 4),
-            new Course("CPE 473", 4),
-            new Course("CPE 476", 4),
-            new Course("CPE 572", 4)));
-
-      /*
-       * Why compare HashSets here?  Just so that the order of the
-       * elements in the list is not important for this test.
-       */
-      assertEquals(new HashSet<>(expected),
-         new HashSet<>(ExampleMap.highEnrollmentStudents(
-            courseListsByStudent, 16)));
-   }
-
-   @Test
-   public void testExampleMap2()
-   {
-      fail("Missing ExampleMap2");
-      /* TO DO: Write another valid test case. */
-   }
+   public static void verifyImplSpecifics2 (final Class<?> clazz,
+      final List<String> expectedMethodNames,
+      final List<Class> expectedMethodReturns,
+      final List<Class[]> expectedMethodParameters) {
+		 assertEquals(3.0,new Point(3.0,4.0).getX());
+		 assertEquals(4.0,new Point(3.0,4.0).getY());
+		 assertEquals(5.0,new Point(3.0,4.0).getRadius());
+		 Point newPoint = new Point (-4.0,3.0);
+		 assertEquals(newPoint,new Point(3.0,4.0).rotate90());
+	  }
+	}
 }
