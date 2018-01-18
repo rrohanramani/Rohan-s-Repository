@@ -16,21 +16,11 @@ public class TestCases
 {
    public static final double DELTA = 0.00001;
 
-   /*
-    * This test is just to get you started.
-    */
-   @Test
    public void testGetX()
    {
       assertEquals(1.0, new Point(1.0, 2.0).getX(), DELTA);
    }
 
-   /*
-    * The tests below here are to verify the basic requirements regarding
-    * the "design" of your class.  These are to remain unchanged.
-    */
-
-   @Test
    public void testImplSpecifics()
       throws NoSuchMethodException
    {
@@ -92,7 +82,7 @@ public class TestCases
          assertEquals(expectedMethodReturns.get(i), method.getReturnType());
       }
 
-      // verify that fields are final
+      
       final List<Field> nonFinalFields = Arrays.stream(
          clazz.getDeclaredFields())
             .filter(f -> !Modifier.isFinal(f.getModifiers()))
