@@ -19,7 +19,7 @@ class Course
 
    public int getNumUnits()
    {
-      return numUnits;
+      return numUnits; 
    }
 }
  
